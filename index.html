@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0f"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Deadly Sprint"/>
+<title>Deadly Sprint — Solo</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="icon" type="image/png" href="icon-192.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{background:#0a0a0f;overscroll-behavior:none}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#f0f0f4}
+  ::-webkit-scrollbar{display:none}
+  input,textarea{font-family:'DM Mono',monospace}
+  .fade{animation:fade .22s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @keyframes conffall{to{transform:translateY(115vh) rotate(var(--rot,360deg));opacity:.15}}
+  @keyframes pop{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+  @keyframes ovin{from{opacity:0}to{opacity:1}}
+  @keyframes ovout{from{opacity:1}to{opacity:0}}
+  [data-act]:active{opacity:.7}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="err"></div>
+<script>
+window.onerror=function(m,s,l,c,e){var d=document.getElementById("err");if(d){d.style.display="block";d.textContent="Error:\n"+m+"\n"+(e&&e.stack?e.stack:"");}return false;};
+try{
+// ═══ DEADLY SPRINT · SOLO FEMALE · 28 NOV 2026 · DATA ════════════════════════
+const RACE_DATE = new Date("2026-11-28T09:00:00");
+const NWEEKS = 4;
+
+const C = {
+  bg:"#0a0a0f", surface:"#14141c", card:"#1a1a24", border:"rgba(255,255,255,.07)",
+  text:"#f0f0f4", muted:"#6a6a82",
+  lime:"#e8ff47", blue:"#47c8ff", purple:"#c084fc", orange:"#fb923c", green:"#6aff47", red:"#ff5a4f",
+};
+
+const PHASES = [
+  { id:1, title:"BUILD", wks:"Weeks 1–2",
+    desc:"Overload the labours above race weight, fast 200m reps, long circuits.",
+    weeks:{
+      1:{h:"Week 1 — Overload",     run:"10×200m @ 48–52s · 60s jog", rest:"60s strength", rpe:"RPE 8"},
+      2:{h:"Week 2 — Peak Volume",  run:"12×200m @ 47–50s · 45s jog", rest:"45s strength", rpe:"RPE 8–9"},
+    }},
+  { id:2, title:"SHARPEN", wks:"Week 3",
+    desc:"Full 12-round race rehearsal, faster/shorter runs, volume trimmed.",
+    weeks:{
+      3:{h:"Week 3 — Full Rehearsal", run:"8×200m @ 45–48s · full recovery", rest:"60s strength", rpe:"RPE 9 rehearsal"},
+    }},
+  { id:3, title:"RACE", wks:"Week 4",
+    desc:"Taper: openers, primer, shakeout, race Saturday.",
+    weeks:{
+      4:{h:"Race Week 🏁", run:"Openers 5×200m · then rest up", rest:"Full recovery", rpe:"RPE 6 max"},
+    }},
+];
+const phOf = w => w<=2?1:w===3?2:3;
+const wNote = w => PHASES[phOf(w)-1].weeks[w];
+
+// ── race labours (Solo Female) ──
+const LAB = [
+  {n:"Farmers carry",          v:"120m", w:"2×16kg"},
+  {n:"KB deadlift",            v:"30",   w:"24kg"},
+  {n:"DB lunge",               v:"30m",  w:"2×7.5kg"},
+  {n:"DB snatch",              v:"30",   w:"9kg"},
+  {n:"Burpee broad jump",      v:"30m",  w:"BW"},
+  {n:"Goblet squat",           v:"30",   w:"12kg"},
+  {n:"Front carry (plate)",    v:"120m", w:"20kg"},
+  {n:"Push press (DB)",        v:"30",   w:"2×6kg"},
+  {n:"Bear crawl",             v:"60m",  w:"BW"},
+  {n:"Clean & press (plate)",  v:"30",   w:"10kg"},
+  {n:"Overhead carry (plate)", v:"90m",  w:"10kg"},
+  {n:"Devil press",            v:"10",   w:"2×5kg"},
+];
+function circuit(from,to,pace){
+  const cs=[{n:"Every round: Run @ "+pace,v:"200m"}];
+  for(let i=from;i<=to;i++){ const L=LAB[i-1]; cs.push({n:`R${i}: ${L.n}${L.w==="BW"?"":" @ "+L.w}`,v:L.v}); }
+  return cs;
+}
+
+const ex=(id,ic,n,s,note)=>({id,ic,n,s,note:note||""});
+
+// ── race week ──
+function raceWeekDays(){
+  return [
+    {num:"D1",tag:"cond",c:C.blue,dur:"30 min",int:60,calNote:"Normal eating · hydrate well all week",
+     name:"Openers",title:"Race Openers — 5×200m",secs:[
+      {lbl:"Warm-Up · 10 min",exs:[
+        ex("o1","🏃","Easy jog","6 min","Conversational"),
+        ex("o2","⚡","Drills: A-skips · high knees · butt kicks","2×20m ea"),
+        ex("o3","💨","Strides","3×60m","Build to race pace")]},
+      {lbl:"Openers",exs:[
+        ex("o4","🎯","200m repeats","5×200m","Race pace ~52–55s · 2 min walk · crisp, not hard")]},
+      {lbl:"Cool-Down",exs:[ex("o5","🚶","Easy jog / walk","5 min")]}]},
+    {num:"D2",tag:"hybrid",c:C.lime,dur:"20 min",int:50,calNote:"Normal eating · sleep is the priority",
+     name:"Primer",title:"Primer — 2 Easy Rounds",secs:[
+      {lbl:"Warm-Up · 5 min",exs:[
+        ex("p1","🐻","Bear crawl","1×20m","Fresh · hips low, small steps — just the pattern"),
+        ex("p2","🔄","Light snatch + devil press","5 ea","Groove only")]},
+      {lbl:"Primer — 2 rounds, moderate",fin:true,rounds:"2 rounds",cs:[
+        {n:"Run",v:"200m"},{n:"Farmers @ 2×16kg",v:"60m"},{n:"DB snatch @ 9kg",v:"10"},{n:"Rest",v:"90s"}]}]},
+    {num:"D3",tag:"cond",c:C.blue,dur:"25 min",int:30,calNote:"Normal eating · nothing new this week",
+     name:"Easy Jog",title:"Easy Jog + Mobility",secs:[
+      {lbl:"Easy",exs:[
+        ex("j1","🏃","Easy jog","20 min","Genuinely easy"),
+        ex("j2","🧘","Mobility: hips · shoulders · T-spine","8 min")]}]},
+    {num:"D4",tag:"rest",c:C.muted,dur:"15 min",int:15,rest:true,calNote:"",
+     name:"Rest",title:"Rest — optional 15 min walk",secs:[]},
+    {num:"D5",tag:"cond",c:C.blue,dur:"20 min",int:35,calNote:"Familiar foods · carbs at each meal · hydrate",
+     name:"Shakeout",title:"Shakeout — Day Before",secs:[
+      {lbl:"Shakeout",exs:[
+        ex("s1","🏃","Easy jog","10 min"),
+        ex("s2","💨","Strides","3×100m","Relaxed speed"),
+        ex("s3","🐻","Bear crawl","1×15m","Indoor only · pattern touch")]},
+      {lbl:"Admin",exs:[
+        ex("s4","🎒","Kit out · start time · travel plan","—","Shoes, chip, fuel, warm layers"),
+        ex("s5","😴","Early night","8h+")]}]},
+    {num:"🏁",tag:"hybrid",c:C.red,dur:"race",int:100,calNote:"Breakfast 2.5–3h before · familiar foods · caffeine ~45 min out",
+     name:"RACE DAY",title:"RACE DAY — DEADLY SPRINT 🏁",secs:[
+      {lbl:"Warm-Up — start 20 min before",exs:[
+        ex("r1","🏃","Easy jog","5 min"),
+        ex("r2","⚡","Drills + 3 builds to race pace","5 min"),
+        ex("r3","🔄","5 snatch + 3 devil press + 10m bear crawl","1×","Prime the movements")]},
+      {lbl:"The race — 12 rounds",fin:true,rounds:"12 rounds",cs:circuit(1,12,"52–56s")},
+      {lbl:"Pacing plan — tick as you commit",exs:[
+        ex("r4","1️⃣","Runs controlled — don't sprint the 200s","—","~52–56s · save it for the labours"),
+        ex("r5","✂️","Break 30-rep sets early","—","15/15 on snatch, push press, clean & press"),
+        ex("r6","🧳","Carries unbroken","—","Farmers, front, overhead — never set down"),
+        ex("r7","🐻","Bear crawl steady, not fast","—","Hips low · breathe · protect the heart rate"),
+        ex("r8","🔥","Devil press paced from rep 1","—","Last labour — empty the tank here"),
+        ex("r9","🏃","Jog every transition","—","Free seconds")]}]},
+    {num:"R",tag:"rest",c:C.muted,dur:null,int:12,rest:true,calNote:"",
+     name:"Rest",title:"Rest & Celebrate",secs:[]},
+  ];
+}
+
+function getDays(w){
+  if(w===4) return raceWeekDays();
+  const P = {
+    1:{sets:4, bc2:"3×15m", bc4:"3×15m", iv:"10×200m", ivp:"48–52s", ivr:"60s jog", r4:"2×400m",
+       d5:{n:"Tempo",s:"20 min",note:"5:10–5:15/km · comfortably hard"},
+       cr:[1,8], crp:"55–58s", crr:"45s between rounds", fr:"3 rounds",
+       d6:{n:"Z2 run",s:"30 min",note:"Conversational · skip if recovery is low"}},
+    2:{sets:5, bc2:"3×20m", bc4:"3×20m", iv:"12×200m", ivp:"47–50s", ivr:"45s jog", r4:"3×400m",
+       d5:{n:"400m repeats",s:"6×400m",note:"1:50–1:55 each · 75s jog"},
+       cr:[5,12], crp:"52–56s", crr:"30s between rounds", fr:"4 rounds",
+       d6:{n:"Z2 run + strides",s:"35 min",note:"Finish with 4×20s strides · skip if recovery is low"}},
+    3:{sets:3, bc2:"1×60m", bc4:"2×30m", iv:"8×200m", ivp:"45–48s", ivr:"90s walk", r4:"2×400m",
+       d5:{n:"Tempo",s:"15 min",note:"5:05/km · then 4×100m strides"},
+       cr:[1,12], crp:"52–56s", crr:"no planned rest — race effort", fr:"2 rounds",
+       d6:{n:"Easy jog + mobility",s:"20 min",note:"Optional · or full rest"}},
+  }[w];
+  const s=P.sets;
+  const full = (P.cr[0]===1&&P.cr[1]===12);
+  const nRounds = P.cr[1]-P.cr[0]+1;
+
+  return [
+    // D1 — SPRINT INTERVALS (outdoor)
+    {num:"D1",tag:"cond",c:C.blue,dur:"45 min",int:88,calNote:"Carbs the evening before + a top-up before the session",
+     name:"Sprint Intervals",title:"Sprint Intervals — "+P.iv,secs:[
+      {lbl:"Warm-Up · 12 min",exs:[
+        ex("d1a","🏃","Easy jog","8 min","Gradual build"),
+        ex("d1b","⚡","Drills: A-skips · high knees · butt kicks","2×20m ea"),
+        ex("d1c","💨","Strides","4×60m","Build to interval pace")]},
+      {lbl:"Main Set",exs:[
+        ex("d1m","🎯","200m repeats",P.iv,P.ivp+" · "+P.ivr+" · same split every rep"),
+        ex("d1n","🔥","400m race-effort reps",P.r4,"1:50–1:55 · 2 min walk · finish strong")]},
+      {lbl:"Cool-Down · 5 min",exs:[ex("d1d","🚶","Easy jog / walk","5 min")]}]},
+
+    // D2 — STRENGTH-ENDURANCE A: legs / carries / grip (gym)
+    {num:"D2",tag:"lower",c:C.purple,dur:"55 min",int:86,calNote:"Normal carbs · protein after",
+     name:"Legs + Carries",title:"Strength-Endurance A — Legs & Carries",secs:[
+      {lbl:"Skill — fresh · 5 min",exs:[
+        ex("d2bc","🐻","Bear crawl",P.bc2,w===3?"Race distance unbroken · hips low, small steps, breathe":"Pure form · hips low, opposite hand/foot, breathe")]},
+      {lbl:"Strength-Endurance · "+(w===3?"60s":w===2?"45s":"60s")+" rest",exs:[
+        ex("d2a","🏋️","KB Deadlift @ 32kg",s+"×12","Overload vs 24kg race KB · flat back, hips drive"),
+        ex("d2b","🦵","Goblet Squat @ 16kg",s+"×15","Race is 30 @ 12kg · deep, elbows inside knees"),
+        ex("d2c","🦵","DB Lunge @ 2×10kg",s+"×30m","Race 30m @ 2×7.5kg · knee taps, torso tall")]},
+      {lbl:"Carries · grip",exs:[
+        ex("d2d","🧳","Farmers Carry @ 2×20kg",s+"×60m","Race 120m @ 2×16kg · never set down"),
+        ex("d2e","🏋️","Front Carry @ 20kg plate",(s-1)+"×60m","Race 120m · hug it high, short quick steps")]},
+      {lbl:"Finisher — legs + lungs",fin:true,rounds:P.fr,cs:[
+        {n:"Goblet squat @ 12kg",v:"15"},{n:"Farmers @ 2×16kg",v:"40m"},{n:"Burpee broad jump",v:"10m"},{n:"Rest",v:"60s"}]}]},
+
+    // D3 — SPRINT CIRCUIT / REHEARSAL (gym)
+    {num:"D3",tag:"hybrid",c:C.lime,dur:full?"~35–40 min":"40 min",int:full?98:94,calNote:full?"Fuel like race day — carbs the night before, same breakfast":"Carbs up · hardest session of the week",
+     name:full?"FULL REHEARSAL":"Sprint Circuit",title:full?"FULL 12-Round Race Rehearsal 🎯":"Sprint Circuit — "+nRounds+" Rounds",secs:[
+      {lbl:"Warm-Up · 8 min",exs:[
+        ex("d3a","🏃","Easy jog + dynamic mobility","5 min","Leg swings ×10/side · arm circles ×10/dir"),
+        ex("d3b","🔄","Light snatch + devil press + 10m bear crawl","5 ea","Prime the movements")]},
+      {lbl:(full?"RACE REHEARSAL — 12 rounds · race weights · record time":"CIRCUIT — "+nRounds+" rounds · race reps & weights · record time")+" · "+P.crr,
+       fin:true,rounds:nRounds+" rounds",cs:circuit(P.cr[0],P.cr[1],P.crp)},
+      {lbl:"Cool-Down",exs:[
+        ex("d3c","📝","Walk + stretch · log total time","8 min",full?"This is your race predictor":"Compare with next week")]}]},
+
+    // D4 — STRENGTH-ENDURANCE B: shoulders / overhead (gym)
+    {num:"D4",tag:"upper",c:C.orange,dur:"50 min",int:84,calNote:"Normal carbs · protein after",
+     name:"Shoulders + Overhead",title:"Strength-Endurance B — Overhead",secs:[
+      {lbl:"Skill — fresh · 5 min",exs:[
+        ex("d4bc","🐻","Bear crawl",P.bc4,"Fresh · hips low, small steps · steady breathing")]},
+      {lbl:"Overhead Endurance · "+(w===2?"45s":"60s")+" rest",exs:[
+        ex("d4a","💪","DB Snatch @ 9kg",s+"×16","Race 30 · alternate arms, hip drive"),
+        ex("d4b","💪","Push Press @ 2×7.5kg",s+"×15","Overload vs 2×6kg race · leg drive"),
+        ex("d4c","🏋️","Clean & Press @ 10kg plate",s+"×15","Race 30 · floor → shoulder → lockout"),
+        ex("d4d","🔥","Devil Press @ 2×5kg",s+"×8","Race 10 · smooth rhythm from rep 1")]},
+      {lbl:"Carry",exs:[
+        ex("d4e","🏋️","Overhead Carry @ 10kg plate","3×45m","Race 90m · ribs down, arms locked")]},
+      {lbl:"Finisher — shoulder burner",fin:true,rounds:P.fr,cs:[
+        {n:"Devil press @ 2×5kg",v:"5"},{n:"Push press @ 2×6kg",v:"10"},{n:"Bear crawl",v:"15m"},{n:"Rest",v:"60s"}]}]},
+
+    // D5 — TEMPO / 400s (outdoor)
+    {num:"D5",tag:"cond",c:C.blue,dur:"40 min",int:78,calNote:"Normal carbs",
+     name:P.d5.n,title:P.d5.n+" — "+P.d5.s,secs:[
+      {lbl:"Warm-Up · 10 min",exs:[
+        ex("d5a","🏃","Easy jog","8 min"),
+        ex("d5b","💨","Strides","2×60m")]},
+      {lbl:"Main",exs:[ex("d5m","🎯",P.d5.n,P.d5.s,P.d5.note)]},
+      {lbl:"Cool-Down · 8 min",exs:[
+        ex("d5c","🚶","Easy jog / walk","5 min"),
+        ex("d5d","🦵","Calf + hip flexor stretch","3 min")]}]},
+
+    // D6 — OPTIONAL
+    {num:"D6",tag:"cond",c:C.blue,dur:P.d6.s,int:45,optional:true,calNote:"Optional — skip if WHOOP recovery is low",
+     name:P.d6.n,title:P.d6.n+" — Optional",secs:[
+      {lbl:"Aerobic",exs:[ex("d6a","🏃",P.d6.n,P.d6.s,P.d6.note)]},
+      {lbl:"Mobility",exs:[ex("d6b","🧘","Hips · shoulders · T-spine","10 min")]}]},
+
+    // REST
+    {num:"R",tag:"rest",c:C.muted,dur:null,int:12,rest:true,calNote:"",name:"Rest",title:"Rest & Recovery",secs:[]},
+  ];
+}
+
+const TOTAL = (()=>{ let n=0; for(let w=1;w<=NWEEKS;w++) getDays(w).forEach(d=>{ if(!d.rest&&!d.optional) n++; }); return n; })();
+
+// ── Body: InBody history ──
+const BODY_SEED = {
+  entries:[
+    {date:"2026-07-28",weight:"59.6",smm:"28.7",pbf:"13.3",bmr:"1487",vfa:"29.9",score:"85"},
+    {date:"2026-10-13",weight:"60.6",smm:"28.9",pbf:"14.2",bmr:"1493",vfa:"32.8",score:"84"}],
+  nextScanDate:"",
+};
+
+// ═══ VANILLA APP · zero external dependencies ════════════════════════════════
+const store = (()=>{ let mem={}; try{const t="__t";localStorage.setItem(t,"1");localStorage.removeItem(t);
+  return {get:k=>{try{return localStorage.getItem(k)}catch(e){return mem[k]||null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){mem[k]=v}}};
+}catch(e){return {get:k=>mem[k]||null,set:(k,v)=>{mem[k]=v}};}})();
+const LS="deadly-sprint-v1";
+let DATA; try{DATA=JSON.parse(store.get(LS))||{}}catch(e){DATA={}}
+function persist(){store.set(LS,JSON.stringify(DATA));}
+const S={view:"train",week:1,day:0,fuel:"daily"};
+// next session = earliest incomplete required day (skips rest + optional)
+function firstIncomplete(){
+  for(let w=1;w<=NWEEKS;w++){ const days=getDays(w);
+    for(let i=0;i<days.length;i++){ const d=days[i]; if(!d.rest&&!d.optional&&!((DATA[`w${w}d${i}`]||{}).completed)) return {w,i}; } }
+  return null;
+}
+function nextAfter(cw,ci){
+  const order=[]; for(let w=1;w<=NWEEKS;w++) for(let i=0;i<7;i++) order.push([w,i]);
+  const start=order.findIndex(o=>o[0]===cw&&o[1]===ci)+1;
+  for(let k=0;k<order.length;k++){ const [w,i]=order[(start+k)%order.length]; const d=getDays(w)[i];
+    if(!d.rest&&!d.optional&&!((DATA[`w${w}d${i}`]||{}).completed)) return {w,i}; }
+  return null;
+}
+
+const dtr=()=>Math.max(0,Math.ceil((RACE_DATE-new Date())/86400000));
+const START=new Date("2026-11-02T00:00:00");
+function sessionDate(week,day){ const d=new Date(START); d.setDate(d.getDate()+(week-1)*7+day); return d; }
+function relDay(dt){ const t=new Date(); t.setHours(0,0,0,0); const dd=Math.round((dt-t)/86400000); return dd===0?"today":dd>0?`in ${dd} day${dd>1?"s":""}`:`${-dd} day${dd<-1?"s":""} ago`; }
+const fmtDate=dt=>dt.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
+const TAGEMO={cond:"🏃",lower:"🦵",upper:"💪",hybrid:"🔥",rest:"🛌"};
+const TAGS={cond:"RUN",lower:"LOWER",upper:"UPPER",hybrid:"ENGINE",rest:"REST"};
+const F={disp:"'Bebas Neue','Arial Narrow',system-ui,sans-serif",mono:"'DM Mono','SFMono-Regular',Menlo,monospace"};
+const e=s=>(s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function bar(v,c){return `<div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="height:100%;width:${v}%;background:${c};border-radius:2px"></div></div>`;}
+
+// ── Day card ──
+// swap indoor-only work (equipment circuits, floor core, burpees) for run-based alternatives
+function outdoorize(secs){
+  const badRx=/hollow|plank|dead ?bug|hanging|burpee|sit-?up|crunch|v-?up|bear ?crawl/i;
+  const kitRx=/wall ball|kb|kettlebell|ski|\brow\b|sled|burpee/i;
+  return secs.map((sec,si)=>{
+    if(sec.fin){
+      const txt=(sec.lbl+" "+sec.cs.map(c=>c.n).join(" "));
+      if(kitRx.test(txt)) return {lbl:"Outdoor swap — race-pace surges",exs:[
+        {id:"out"+si+"a",ic:"💨",n:"Race-pace surges",s:"5×30s",note:"Easy jog 60s between · same 'lift on tired legs' skill, no kit"}]};
+      return sec;
+    }
+    if((sec.exs||[]).some(x=>badRx.test(x.n))){
+      // keep the non-floor exercises, replace the floor/burpee ones with standing work
+      const kept=sec.exs.filter(x=>!badRx.test(x.n));
+      kept.push({id:"out"+si+"c",ic:"🦵",n:"Walking lunges",s:"2×20",note:"Standing — replaces floor core"});
+      kept.push({id:"out"+si+"d",ic:"🦵",n:"Calf raises (curb)",s:"3×15",note:"Standing"});
+      return {lbl:sec.lbl+" · outdoor",exs:kept};
+    }
+    return sec;
+  });
+}
+
+function dayCard(day,dk){
+  const dd=DATA[dk]||{};
+  if(day.rest){
+    return `<div class="fade" style="text-align:center;padding:48px 20px">
+      <div style="font-size:40px;margin-bottom:10px">🛌</div>
+      <div style="font-family:${F.disp};font-size:28px;color:${C.text};letter-spacing:.04em">Rest &amp; Recovery</div>
+      <div style="font-size:13px;color:${C.muted};margin:6px auto 0;line-height:1.6;max-width:260px">Sleep 8h+ · protein anchor stays · this is where the fitness lands. Optional 20–30 min walk or mobility.</div>
+      <div style="margin-top:16px;font-family:${F.mono};font-size:11px;color:${C.muted}">🍽️ Normal eating · protein at every meal</div></div>`;
+  }
+  let h=`<div class="fade">
+    <div style="font-family:${F.disp};font-size:25px;color:${C.text};letter-spacing:.03em;line-height:1.1;margin-bottom:3px">${e(day.title)}</div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:6px;flex-wrap:wrap">
+      <span style="font-family:${F.mono};font-size:9px;color:${day.c};border:1px solid ${day.c};border-radius:5px;padding:2px 6px;letter-spacing:.08em">${TAGS[day.tag]||day.tag.toUpperCase()}</span>
+      ${day.dur?`<span style="font-family:${F.mono};font-size:11px;color:${C.muted}">⏱ ${e(day.dur)}</span>`:""}
+      ${day.optional?`<span style="font-family:${F.mono};font-size:10px;color:${C.muted}">optional</span>`:""}
+    </div>
+    <div style="margin-bottom:12px">${bar(day.int,day.c)}</div>`;
+  if(day.calNote) h+=`<div style="background:rgba(71,200,255,.05);border:1px solid rgba(71,200,255,.14);border-radius:8px;padding:7px 10px;margin-bottom:12px;font-size:11px;color:${C.blue};line-height:1.5">🍽️ ${e(day.calNote)}</div>`;
+
+  const isRun = day.tag==="cond";
+  const env = isRun ? ((dd.env)||"indoor") : "indoor";
+  if(isRun){
+    h+=`<div style="display:flex;gap:4px;background:${C.surface};border:1px solid ${C.border};border-radius:10px;padding:4px;margin-bottom:12px">
+      ${[["indoor","🏠 Indoor"],["outdoor","🌳 Outdoor"]].map(([v,l])=>`<div data-act="env" data-v="${v}" style="flex:1;text-align:center;padding:8px 4px;border-radius:8px;background:${env===v?C.blue:"transparent"};color:${env===v?"#0a0a0f":C.muted};font-family:${F.mono};font-size:11px;font-weight:${env===v?700:400};cursor:pointer">${l}</div>`).join("")}
+    </div>`;
+    if(env==="outdoor") h+=`<div style="font-family:${F.mono};font-size:10px;color:${C.green};margin:-4px 0 12px 2px">No kit, no floor work — running does the job</div>`;
+  }
+  const secs = (isRun && env==="outdoor") ? outdoorize(day.secs) : day.secs;
+
+  secs.forEach((sec,si)=>{
+    if(sec.fin){
+      const rounds=(dd.fins||{})[si]||[];
+      const n=parseInt((sec.rounds||"").match(/(\d+)/)?.[1]||"1");
+      h+=`<div style="background:rgba(232,255,71,.04);border:1px solid rgba(232,255,71,.15);border-radius:10px;padding:10px 12px;margin-top:6px">
+        <div style="font-family:${F.mono};font-size:9px;color:${C.lime};letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">🔁 ${e(sec.lbl)}</div>`;
+      sec.cs.forEach((c,i)=>{ h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;${i<sec.cs.length-1?"border-bottom:1px solid rgba(255,255,255,.04)":""}">
+        <span style="font-size:12.5px;color:${C.text}">${e(c.n)}</span><span style="font-family:${F.mono};font-size:12px;color:${C.lime};font-weight:600">${e(c.v)}</span></div>`; });
+      h+=`<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">`;
+      for(let i=0;i<n;i++){ const on=rounds[i];
+        h+=`<div data-act="round" data-si="${si}" data-ri="${i}" style="width:34px;height:34px;border-radius:8px;border:1.5px solid ${on?C.lime:C.muted};background:${on?C.lime:"transparent"};color:${on?"#0a0a0f":C.muted};display:flex;align-items:center;justify-content:center;font-family:${F.mono};font-size:12px;font-weight:700;cursor:pointer">${i+1}</div>`; }
+      h+=`</div></div>`;
+    } else {
+      h+=`<div style="margin-top:14px"><div style="font-family:${F.mono};font-size:9px;color:${C.muted};letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px">${e(sec.lbl)}</div>`;
+      sec.exs.forEach(ex=>{ const done=!!(dd.done||{})[ex.id];
+        const varLift=/squat|deadlift|lunge|snatch|push press|clean|devil|farmer|carry/i;
+        const noLoad=/\+|light|pacing|paced|break|unbroken/i.test(ex.n)||ex.s==="—";
+        const isVar=!noLoad&&varLift.test(ex.n);
+        const RACEWT=[[/farmer/i,"2×16kg"],[/deadlift/i,"24kg"],[/lunge/i,"2×7.5kg"],[/snatch/i,"9kg"],[/goblet/i,"12kg"],[/front carry/i,"20kg"],[/push press/i,"2×6kg"],[/clean/i,"10kg"],[/overhead carry/i,"10kg"],[/devil/i,"2×5kg"]];
+        let raceRef=null; if(!noLoad) for(const rw of RACEWT){ if(rw[0].test(ex.n)){ raceRef=rw[1]; break; } }
+        const wkey=ex.n.replace(/\s*@.*$/,"").trim().toLowerCase();
+        const rawOwn=(dd.w||{})[ex.id], rawGd=(DATA.weights||{})[wkey];
+        const own=Array.isArray(rawOwn)?rawOwn:(rawOwn!=null?[rawOwn]:null);
+        const gd =Array.isArray(rawGd)?rawGd:(rawGd!=null?[rawGd]:null);
+        const vals=own||gd||[];
+        const ph="kg";
+        const setM=(ex.s||"").match(/^(\d+)\s*[×x]/); const nSets=Math.min(setM?+setM[1]:1,6);
+        h+=`<div data-act="ex" data-id="${ex.id}" style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;opacity:${done?.5:1}">
+          <div style="width:22px;height:22px;border-radius:6px;border:1.5px solid ${done?C.green:C.muted};background:${done?C.green:"transparent"};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#0a0a0f;font-weight:700;margin-top:1px">${done?"✓":""}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+              <span style="font-size:13.5px;color:${C.text};font-weight:500;${done?"text-decoration:line-through":""}">${e(ex.ic)} ${e(ex.n)}</span>
+              ${ex.s&&ex.s!=="—"?`<span style="font-family:${F.mono};font-size:11px;color:${C.lime};font-weight:600;white-space:nowrap;flex-shrink:0">${e(ex.s)}</span>`:""}
+            </div>
+            ${ex.note?`<div style="font-size:11px;color:${C.muted};line-height:1.45;margin-top:2px">${e(ex.note)}</div>`:""}
+            ${(isVar||raceRef)?`<div data-noex="1" style="margin-top:7px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${isVar?"5px":"0"}">
+                <span style="font-family:${F.mono};font-size:8.5px;color:${C.muted};letter-spacing:.1em">${isVar?"LOAD PER SET · kg":"LOAD"}</span>
+                ${raceRef?`<span style="font-family:${F.mono};font-size:8.5px;color:${C.orange};border:1px solid ${C.orange}55;border-radius:5px;padding:2px 6px;letter-spacing:.06em">RACE ${e(raceRef)}</span>`:""}
+              </div>
+              ${isVar?`<div style="display:flex;gap:5px;flex-wrap:wrap">${Array.from({length:nSets}).map((_,si)=>{const val=vals[si]!=null?vals[si]:"";return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><input type="text" inputmode="decimal" data-w="${ex.id}" data-wkey="${e(wkey)}" data-dk="${dk}" data-set="${si}" data-nsets="${nSets}" value="${e(val)}" placeholder="${e(ph)}" style="width:48px;background:${C.bg};border:1px solid ${val?C.purple:C.border};border-radius:7px;padding:5px 4px;color:${C.text};font-family:${F.mono};font-size:12px;text-align:center;outline:none"/><span style="font-family:${F.mono};font-size:8px;color:${C.muted}">${si+1}</span></div>`;}).join("")}</div>`:""}
+            </div>`:""}
+          </div></div>`; });
+      h+=`</div>`;
+    }
+  });
+
+  h+=`<div style="margin-top:16px">
+    <div style="font-family:${F.mono};font-size:9px;color:${C.muted};letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px">Notes / times</div>
+    <textarea data-field="note" data-dk="${dk}" rows="2" placeholder="Log paces, weights, how it felt, sim times…" style="width:100%;background:${C.card};border:1px solid ${C.border};border-radius:8px;padding:9px 10px;color:${C.text};font-size:12.5px;outline:none;resize:vertical;box-sizing:border-box">${e(dd.note||"")}</textarea>
+  </div>
+  <button data-act="complete" style="width:100%;margin-top:12px;padding:13px;border-radius:10px;border:1px solid ${dd.completed?C.green:C.border};background:${dd.completed?C.green:"transparent"};color:${dd.completed?"#0a0a0f":C.text};font-family:${F.disp};font-size:16px;letter-spacing:.06em;cursor:pointer">${dd.completed?"✓ SESSION DONE":"MARK SESSION DONE"}</button>
+  </div>`;
+  return h;
+}
+
+// ── Train ──
+function train(){
+  const days=getDays(S.week),note=wNote(S.week),ph=PHASES[phOf(S.week)-1],curPhase=phOf(S.week),cur=days[S.day];
+  const blocks=PHASES.map(p=>({id:p.id,name:p.title,wks:p.wks,weeks:Object.keys(p.weeks).map(Number)}));
+  // block cards
+  let h=`<div style="display:flex;gap:7px;margin-bottom:12px">`;
+  blocks.forEach(b=>{ const on=curPhase===b.id; let done=0,total=0;
+    b.weeks.forEach(w=>getDays(w).forEach((d,i)=>{ if(!d.rest){total++; if((DATA[`w${w}d${i}`]||{}).completed)done++;} }));
+    const pct=total?Math.round(done/total*100):0;
+    h+=`<div data-act="phase" data-v="${b.id}" style="flex:1;background:${C.card};border:1px solid ${on?C.lime:C.border};border-radius:14px;padding:11px 9px 10px;cursor:pointer;${on?`box-shadow:0 0 14px rgba(232,255,71,.13)`:""}">
+      <div style="font-family:${F.mono};font-size:8px;color:${C.muted};letter-spacing:.14em">PHASE ${b.id}</div>
+      <div style="font-family:${F.disp};font-size:20px;letter-spacing:.01em;color:${on?C.lime:C.text};line-height:1.02;margin:2px 0 3px">${b.name}</div>
+      <div style="font-family:${F.mono};font-size:9px;color:${on?C.lime:C.muted}">${b.wks}</div>
+      <div style="margin-top:8px">${bar(pct,on?C.lime:C.muted)}</div>
+    </div>`; });
+  h+=`</div>`;
+  // week row — current phase only
+  h+=`<div style="display:flex;gap:5px;background:${C.surface};border:1px solid ${C.border};border-radius:12px;padding:5px;margin-bottom:12px">`;
+  blocks[curPhase-1].weeks.forEach(w=>{ const on=w===S.week,wc=weekComplete(w);
+    h+=`<div data-act="week" data-v="${w}" style="flex:1;text-align:center;padding:11px 4px;border-radius:9px;background:${on?C.lime:"transparent"};color:${on?"#0a0a0f":C.muted};font-family:${F.mono};font-size:13px;font-weight:700;cursor:pointer;position:relative">Wk${w}${wc&&!on?`<span style="position:absolute;top:6px;right:9px;width:5px;height:5px;border-radius:50%;background:${C.green}"></span>`:""}</div>`; });
+  h+=`</div>
+  <div style="background:rgba(71,200,255,.05);border:1px solid rgba(71,200,255,.2);border-radius:11px;padding:11px 13px;margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:4px">
+      <span style="font-family:${F.disp};font-size:17px;color:${C.text};letter-spacing:.04em">${e(note.h)}</span>
+      <span style="font-family:${F.mono};font-size:9px;color:${C.blue};white-space:nowrap">${e(note.rpe)}</span></div>
+    <div style="font-family:${F.mono};font-size:11px;color:${C.blue};margin-bottom:3px">${TAGEMO[cur.tag]||"•"} ${e(cur.name)}${cur.dur?" · "+e(cur.dur):""}${cur.tag==="cond"&&!cur.rest?" · "+e(note.run.split(" · ")[0]):""}</div>
+    <div style="font-family:${F.mono};font-size:9px;color:${C.muted}">${e(fmtDate(sessionDate(S.week,S.day)))} · ${relDay(sessionDate(S.week,S.day))} · rest ${e(note.rest)} · 🏁 ${dtr()}d</div>
+  </div>`;
+  h+=`<div style="display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap">`;
+  days.forEach((d,i)=>{ const dk=`w${S.week}d${i}`,done=(DATA[dk]||{}).completed,on=i===S.day;
+    h+=`<div data-act="day" data-v="${i}" style="flex:1 1 0;min-width:38px;padding:9px 2px;border-radius:9px;border:1px solid ${on?d.c:C.border};background:${on?d.c:done?"rgba(106,255,71,.1)":"transparent"};color:${on?"#0a0a0f":done?C.green:C.muted};cursor:pointer;font-family:${F.mono};font-weight:700;font-size:12px;text-align:center;position:relative">${e(d.num)}${done&&!on?`<span style="position:absolute;top:2px;right:4px;font-size:8px">✓</span>`:""}</div>`; });
+  h+=`</div>`+dayCard(cur,`w${S.week}d${S.day}`);
+  return h;
+}
+
+// ── Fuel ──
+function fuel(){
+  const tabs=[["daily","Sessions"],["morning","Early AM"],["race","Race Wk"],["enough","Enough?"]];
+  if(!tabs.some(t=>t[0]===S.fuel)) S.fuel="daily";
+  const SH=(x,c)=>`<div style="font-family:${F.disp};font-size:19px;color:${c||C.lime};letter-spacing:.03em;margin:16px 0 8px">${x}</div>`;
+  const row=(k,v,c)=>`<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 12px;background:${C.card};border-radius:8px;margin-bottom:5px;align-items:flex-start"><span style="font-family:${F.mono};font-size:11px;color:${c||C.muted};font-weight:600;white-space:nowrap">${e(k)}</span><span style="font-size:11.5px;color:${C.muted};line-height:1.5;text-align:right">${v}</span></div>`;
+  let h=`<div class="fade"><div style="font-family:${F.disp};font-size:30px;letter-spacing:.03em;color:${C.text}">FUEL <span style="color:${C.blue}">GUIDE</span></div>
+    <div style="font-family:${F.mono};font-size:10px;color:${C.muted};margin-bottom:12px">Same as your HYROX block · eat to the work, follow hunger</div>
+    <div style="display:flex;gap:2px;background:${C.surface};border:1px solid ${C.border};border-radius:10px;padding:3px;margin-bottom:6px">`;
+  tabs.forEach(([id,l])=>{ const on=S.fuel===id;
+    h+=`<div data-act="fuel" data-v="${id}" style="flex:1;padding:8px 4px;border-radius:8px;background:${on?C.lime:"transparent"};color:${on?"#0a0a0f":C.muted};font-family:${F.mono};font-size:9.5px;letter-spacing:.04em;font-weight:${on?700:400};cursor:pointer;white-space:nowrap;text-align:center">${l}</div>`; });
+  h+=`</div>`;
+  if(S.fuel==="daily"){
+    h+=`<div style="background:rgba(71,200,255,.06);border:1px solid rgba(71,200,255,.2);border-radius:10px;padding:11px 12px;margin-top:12px;font-size:12px;color:${C.muted};line-height:1.6">Nothing changes from what's been working. Protein at every meal, carbs around training, more on the big days. <b style="color:${C.text}">If you're hungry, eat</b> — hunger in a hard week is your body asking for fuel.</div>`;
+    h+=SH("By session");
+    [["D3 circuit / rehearsal","Biggest carb day — carb-rich dinner the night before, proper meal after"],["D1 / D2 / D4","Carbs before and after · protein after"],["D5 / D6","Normal meals"],["Rest","Normal meals — recovery is training"]].forEach(([k,v])=>h+=row(k,v,C.blue));
+    h+=SH("Plate shape");
+    [["Every meal","Protein + carbs + veg"],["After training","Carbs + protein within ~1–2h"],["Hydration","Water through the day · electrolytes on sweaty sessions"]].forEach(([k,v])=>h+=row(k,v,C.lime));
+  } else if(S.fuel==="morning"){
+    h+=SH("Early sessions");
+    [["Easy / short","Rice cakes + honey is fine"],["Hard (D1, D3, D4)","Add a banana or dates · juice if solids are hard at 5am"],["The real lever","The carb-rich dinner the night before"],["Straight after","Proper breakfast — carbs + protein"]].forEach(([k,v])=>h+=row(k,v,C.lime));
+  } else if(S.fuel==="race"){
+    h+=SH("Race week");
+    [["Mon–Wed","Normal eating · hydrate · nothing new"],["Thu–Fri","Carbs at every meal · familiar foods · go easy on fibre Friday"],["Scale up?","Expected — carbs hold water. It's fuel, not fat."],["Race morning","Breakfast 2.5–3h before · same as rehearsal · caffeine ~45 min out"],["After","Eat well and celebrate"]].forEach(([k,v])=>h+=row(k,v,C.lime));
+  } else {
+    h+=SH("Are you eating enough?",C.orange);
+    h+=`<div style="background:rgba(251,146,60,.06);border:1px solid rgba(251,146,60,.25);border-radius:10px;padding:12px 13px;font-size:12.5px;color:${C.muted};line-height:1.7">If two or more creep in, <b style="color:${C.text}">eat more — mostly carbs</b>, don't train harder:<div style="margin-top:8px">`;
+    ["WHOOP HRV down / RHR up over several days","Runs or circuits stalling at the same effort","Broken sleep despite fatigue","Always cold","Niggles that won't clear","Low mood or short fuse","Any change to your cycle"].forEach(x=>h+=`<div style="display:flex;gap:8px;padding:3px 0"><span style="color:${C.orange}">›</span><span>${x}</span></div>`);
+    h+=`</div><div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">Food feeling noisy? A sports dietitian can set this up with you properly — worth it.</div></div>`;
+  }
+  return h+`</div>`;
+}
+
+// ── Body ──
+function body(){
+  const saved=DATA.__body||BODY_SEED;
+  const entries=(saved.entries||[]).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const base=entries[0],latest=entries.length>1?entries[entries.length-1]:null,show=latest||base;
+  const del=(k,inv)=>{ if(!latest||!base)return null; const d=parseFloat(latest[k])-parseFloat(base[k]); if(isNaN(d))return null; return {d,good:inv?d<0:d>0}; };
+  const mets=[["weight","Weight","kg",false,true],["smm","Muscle","kg",false,false],["pbf","Body Fat","%",true,false],["bmr","BMR","kcal",false,false],["vfa","Visceral","cm²",true,false],["score","Score","",false,false]];
+  let h=`<div class="fade"><div style="font-family:${F.disp};font-size:30px;letter-spacing:.03em;color:${C.text}">BODY <span style="color:${C.purple}">TRACKER</span></div>
+    <div style="font-family:${F.mono};font-size:10px;color:${C.muted};margin-bottom:14px">Baseline: InBody ${base?base.date:"—"} · hold, don't cut</div>
+    <div style="font-family:${F.mono};font-size:9px;color:${C.muted};letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">${latest?"Latest vs Baseline":"Baseline · "+(base?base.date:"")}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px">`;
+  mets.forEach(([k,l,u,inv,neu])=>{ const d=del(k,inv),v=show?show[k]:null;
+    h+=`<div style="background:${C.card};border:1px solid ${C.border};border-radius:10px;padding:10px"><div style="font-family:${F.mono};font-size:8px;color:${C.muted};text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">${l}</div><div style="font-family:${F.disp};font-size:22px;color:${C.purple};line-height:1">${v||"—"}</div><div style="font-family:${F.mono};font-size:8px;color:${C.muted}">${u}</div>${d?`<div style="font-family:${F.mono};font-size:9px;font-weight:600;margin-top:3px;color:${neu?C.orange:d.good?C.green:C.red}">${d.d>0?"+":""}${d.d.toFixed(1)}${u}</div>`:""}</div>`; });
+  h+=`</div>
+    <div style="background:rgba(192,132,252,.06);border:1px solid rgba(192,132,252,.2);border-radius:10px;padding:11px 12px;margin-bottom:16px;font-size:11.5px;color:${C.muted};line-height:1.6">🎯 <b style="color:${C.text}">Goal this block: hold, don't cut.</b> Short sharpening block — muscle and body fat should simply hold. Scale moves with your cycle and carbs; that's water, not fat.</div>
+    <div style="font-family:${F.mono};font-size:9px;color:${C.muted};letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Scan cadence</div>`;
+  [["#6aff47","13 Oct — latest scan (pre-block)"],["#c084fc","No scan during the block"],["#e8ff47","Post-race · early Dec, fasted, same point in cycle"]].forEach(([c,l])=>{
+    h+=`<div style="display:flex;gap:8px;align-items:center;padding:5px 0"><div style="width:3px;align-self:stretch;background:${c};border-radius:2px;min-height:14px"></div><div style="font-size:12px;color:${C.text}">${l}</div></div>`; });
+  if(entries.length){ h+=`<div style="font-family:${F.mono};font-size:9px;color:${C.muted};letter-spacing:.12em;text-transform:uppercase;margin:16px 0 6px">History</div>`;
+    entries.forEach((en,i)=>{ h+=`<div style="background:${C.card};border:1px solid ${C.border};border-radius:9px;padding:9px 12px;margin-bottom:5px"><div style="font-family:${F.mono};font-size:9px;color:${C.purple};margin-bottom:3px">${i===0?"BASELINE · ":""}${en.date}</div><div style="display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:${C.text}">${en.weight?`<span>⚖ ${en.weight}kg</span>`:""}${en.smm?`<span>💪 ${en.smm} SMM</span>`:""}${en.pbf?`<span>📊 ${en.pbf}%</span>`:""}${en.score?`<span>🔥 ${en.score}</span>`:""}</div></div>`; }); }
+  h+=`<div style="margin-top:16px;background:${C.surface};border:1px solid rgba(192,132,252,.3);border-radius:11px;padding:14px">
+    <div style="font-family:${F.mono};font-size:9px;color:${C.purple};letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px">Log New InBody</div>
+    <input data-bf="date" type="date" value="${new Date().toISOString().split("T")[0]}" style="width:100%;background:${C.card};border:1px solid ${C.border};border-radius:7px;padding:8px 10px;color:${C.text};font-size:12px;outline:none;margin-bottom:8px;box-sizing:border-box"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">`;
+  [["weight","Weight kg"],["smm","SMM kg"],["pbf","Body Fat %"],["bmr","BMR"],["vfa","VFA cm²"],["score","Score"]].forEach(([k,l])=>{
+    h+=`<input data-bf="${k}" type="number" inputmode="decimal" placeholder="${l}" style="width:100%;background:${C.card};border:1px solid ${C.border};border-radius:7px;padding:8px;color:${C.text};font-size:13px;outline:none;text-align:center;box-sizing:border-box"/>`; });
+  h+=`</div><button data-act="bodysave" style="width:100%;padding:13px;border-radius:10px;border:1px solid ${C.purple};background:${C.purple};color:#0a0a0f;font-family:${F.disp};font-size:15px;letter-spacing:.06em;cursor:pointer">SAVE ENTRY</button></div></div>`;
+  return h;
+}
+
+// ── Progress ──
+function progress(){
+  let done=0;const total=TOTAL;
+  let rows="";
+  for(let w=1;w<=NWEEKS;w++){ const days=getDays(w);
+    let cells="";
+    days.forEach((d,di)=>{ const c=(DATA[`w${w}d${di}`]||{}).completed; if(c)done++;
+      cells+=`<div data-act="jump" data-w="${w}" data-d="${di}" style="flex:1;height:30px;border-radius:6px;border:1px solid ${c?C.green:C.border};background:${c?"rgba(106,255,71,.18)":d.rest?"rgba(255,255,255,.02)":"transparent"};color:${c?C.green:C.muted};display:flex;align-items:center;justify-content:center;font-family:${F.mono};font-size:9px;font-weight:600;cursor:pointer">${c?"✓":e(d.num)}</div>`; });
+    rows+=`<div style="margin-bottom:8px"><div style="font-family:${F.mono};font-size:9px;color:${phOf(w)===3?C.lime:C.muted};margin-bottom:4px;letter-spacing:.08em">WEEK ${w} · ${PHASES[phOf(w)-1].title}</div><div style="display:flex;gap:4px">${cells}</div></div>`; }
+  const pct=Math.round(done/total*100);
+  return `<div class="fade"><div style="font-family:${F.disp};font-size:30px;letter-spacing:.03em;color:${C.text}">PROGRESS</div>
+    <div style="font-family:${F.mono};font-size:10px;color:${C.muted};margin-bottom:14px">${done} of ${total} sessions · 🏁 ${dtr()} days to race</div>
+    <div style="background:${C.card};border:1px solid ${C.border};border-radius:11px;padding:14px;margin-bottom:16px;text-align:center"><div style="font-family:${F.disp};font-size:44px;color:${C.lime};line-height:1">${pct}%</div><div style="margin:8px 0">${bar(pct,C.lime)}</div><div style="font-family:${F.mono};font-size:10px;color:${C.muted}">programme complete</div></div>${rows}
+    <div style="background:${C.surface};border:1px solid rgba(71,200,255,.25);border-radius:12px;padding:14px;margin-top:18px">
+      <div style="font-family:${F.mono};font-size:9px;color:${C.blue};letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px">Backup & Restore</div>
+      <div style="font-size:11.5px;color:${C.muted};line-height:1.55;margin-bottom:11px">Your logs live only on this device. Export a copy before any update or phone change — then Import to bring it back.</div>
+      <div style="display:flex;gap:8px">
+        <button data-act="export" style="flex:1;padding:11px;border-radius:9px;border:1px solid ${C.blue};background:${C.blue};color:#0a0a0f;font-family:${F.disp};font-size:15px;letter-spacing:.05em;cursor:pointer">⬇ EXPORT</button>
+        <button data-act="import" style="flex:1;padding:11px;border-radius:9px;border:1px solid ${C.border};background:transparent;color:${C.text};font-family:${F.disp};font-size:15px;letter-spacing:.05em;cursor:pointer">⬆ IMPORT</button>
+      </div>
+    </div>
+    </div>`;
+}
+
+function modal(inner){
+  const old=document.getElementById("modal"); if(old) old.remove();
+  const w=document.createElement("div"); w.id="modal";
+  w.style.cssText="position:fixed;inset:0;z-index:120;background:rgba(8,8,12,.86);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;animation:ovin .2s ease";
+  const c=document.createElement("div");
+  c.style.cssText=`width:340px;max-width:100%;background:linear-gradient(180deg,#16161f,#101017);border:1px solid ${C.border};border-radius:18px;padding:18px`;
+  c.innerHTML=inner; w.appendChild(c);
+  w.addEventListener("click",ev=>{ if(ev.target===w||(ev.target.hasAttribute&&ev.target.hasAttribute("data-close"))){ w.remove(); } });
+  document.body.appendChild(w); return w;
+}
+function showExport(){
+  const json=JSON.stringify(DATA);
+  modal(`<div style="font-family:${F.disp};font-size:22px;color:${C.text};letter-spacing:.03em;margin-bottom:4px">BACKUP YOUR LOGS</div>
+    <div style="font-size:11.5px;color:${C.muted};line-height:1.5;margin-bottom:10px">Copy this and paste it somewhere safe (Notes, email to yourself), or download the file. Keep it to restore later.</div>
+    <textarea id="expbox" readonly style="width:100%;height:120px;background:${C.bg};border:1px solid ${C.border};border-radius:9px;padding:9px;color:${C.text};font-family:${F.mono};font-size:10px;resize:none;outline:none;box-sizing:border-box">${e(json)}</textarea>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button data-act="docopy" style="flex:1;padding:11px;border-radius:9px;border:none;background:${C.lime};color:#0a0a0f;font-family:${F.disp};font-size:15px;letter-spacing:.05em;cursor:pointer">COPY</button>
+      <button data-act="dodownload" style="flex:1;padding:11px;border-radius:9px;border:1px solid ${C.blue};background:transparent;color:${C.blue};font-family:${F.disp};font-size:15px;letter-spacing:.05em;cursor:pointer">DOWNLOAD</button>
+    </div>
+    <button data-close style="width:100%;margin-top:8px;padding:9px;border-radius:9px;border:1px solid ${C.border};background:transparent;color:${C.muted};font-family:${F.mono};font-size:11px;cursor:pointer">Close</button>`);
+}
+function showImport(){
+  modal(`<div style="font-family:${F.disp};font-size:22px;color:${C.text};letter-spacing:.03em;margin-bottom:4px">RESTORE LOGS</div>
+    <div style="font-size:11.5px;color:${C.muted};line-height:1.5;margin-bottom:10px">Paste a backup below and tap Restore. It merges into this device — existing entries with the same day are overwritten, everything else is kept.</div>
+    <textarea id="impbox" placeholder="Paste your backup text here…" style="width:100%;height:120px;background:${C.bg};border:1px solid ${C.border};border-radius:9px;padding:9px;color:${C.text};font-family:${F.mono};font-size:10px;resize:none;outline:none;box-sizing:border-box"></textarea>
+    <div id="impmsg" style="font-family:${F.mono};font-size:10px;color:${C.orange};margin-top:6px;min-height:12px"></div>
+    <button data-act="dorestore" style="width:100%;margin-top:6px;padding:11px;border-radius:9px;border:none;background:${C.green};color:#0a0a0f;font-family:${F.disp};font-size:15px;letter-spacing:.05em;cursor:pointer">RESTORE</button>
+    <button data-close style="width:100%;margin-top:8px;padding:9px;border-radius:9px;border:1px solid ${C.border};background:transparent;color:${C.muted};font-family:${F.mono};font-size:11px;cursor:pointer">Close</button>`);
+}
+
+// ── Shell + render ──
+function render(){
+  const TABS=[["train","Train","🏋️"],["fuel","Fuel","🍽️"],["body","Body","📊"],["progress","Progress","📈"]];
+  let inner=S.view==="train"?train():S.view==="fuel"?fuel():S.view==="body"?body():progress();
+  let tabbar=`<div style="position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:rgba(20,20,28,.96);border-top:1px solid ${C.border};display:flex;padding:8px 8px calc(env(safe-area-inset-bottom) + 10px)">`;
+  TABS.forEach(([id,l,ic])=>{ const on=S.view===id;
+    tabbar+=`<div data-act="tab" data-v="${id}" style="flex:1;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;color:${on?C.lime:C.muted}"><span style="font-size:18px;opacity:${on?1:.6}">${ic}</span><span style="font-family:${F.mono};font-size:9px;letter-spacing:.05em">${l}</span></div>`; });
+  tabbar+=`</div>`;
+  document.getElementById("root").innerHTML=
+    `<div style="max-width:480px;margin:0 auto;min-height:100vh;background:${C.bg};color:${C.text}">
+      <div style="padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;border-bottom:1px solid ${C.border};position:sticky;top:0;background:rgba(10,10,15,.94);backdrop-filter:blur(10px);z-index:10">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div style="font-family:${F.disp};font-size:26px;letter-spacing:.04em">DEADLY <span style="color:${C.red}">SPRINT</span></div>
+          <div style="font-family:${F.mono};font-size:11px;color:${C.lime}">🏁 ${dtr()}d</div></div>
+        <div style="font-family:${F.mono};font-size:9.5px;color:${C.muted};letter-spacing:.06em">SOLO · 12×200m + 12 LABOURS · 28 NOV 2026</div>
+      </div>
+      <div style="padding:16px 16px calc(env(safe-area-inset-bottom) + 96px)">${inner}</div>
+      ${tabbar}
+    </div>`;
+}
+
+// ── Celebration ──
+function weekComplete(w){ return getDays(w).every((d,i)=> d.rest || (DATA[`w${w}d${i}`]||{}).completed ); }
+function totalDone(){ let n=0; for(let w=1;w<=NWEEKS;w++){ getDays(w).forEach((d,i)=>{ if((DATA[`w${w}d${i}`]||{}).completed) n++; }); } return n; }
+function tierFor(week,day){
+  const days=getDays(week), wc=weekComplete(week);
+  const count=`Session ${totalDone()} of ${TOTAL} · 🏁 ${dtr()}d to race`;
+  let t;
+  if(week===4 && day===5)          t={title:"DEADLY DONE",emoji:"🏆",sub:"12 runs · 12 labours · log your time",accent:C.red,confetti:150,big:true};
+  else if(week===2 && wc)           t={title:"BUILD COMPLETE",emoji:"💪",sub:"Overload block banked",accent:C.purple,confetti:95,big:true};
+  else if(week===3 && day===2)      t={title:"REHEARSAL DONE",emoji:"🎯",sub:"Full 12 rounds — log your time",accent:C.blue,confetti:85,big:true};
+  else if(wc)                       t={title:"WEEK "+week+" DONE",emoji:"🔥",sub:PHASES[phOf(week)-1].title,accent:C.lime,confetti:65};
+  else { const d=days[day];         t={title:"SESSION DONE",emoji:"🎉",sub:"Week "+week+" · "+d.num+" · "+d.name,accent:C.lime,confetti:38}; }
+  t.count=count; return t;
+}
+function fireConfetti(box,n){
+  const cols=[C.lime,C.blue,C.purple,C.orange,C.green,"#ffffff"];
+  for(let i=0;i<n;i++){
+    const p=document.createElement("span");
+    const x=Math.random()*100,dur=1.8+Math.random()*1.7,delay=Math.random()*0.5;
+    const w=6+Math.random()*6,h=9+Math.random()*10,rot=((Math.random()*720-360)|0)+"deg";
+    p.style.cssText=`position:absolute;left:${x}%;top:-24px;width:${w}px;height:${h}px;background:${cols[i%cols.length]};border-radius:${i%4===0?"50%":"1px"};opacity:.9;animation:conffall ${dur}s linear ${delay}s forwards`;
+    p.style.setProperty("--rot",rot);
+    box.appendChild(p);
+  }
+}
+function celebrate(t){
+  const old=document.getElementById("celebrate"); if(old) old.remove();
+  const wrap=document.createElement("div"); wrap.id="celebrate";
+  wrap.style.cssText="position:fixed;inset:0;z-index:100;background:rgba(8,8,12,.86);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden;animation:ovin .25s ease";
+  const conf=document.createElement("div"); conf.style.cssText="position:absolute;inset:0;pointer-events:none"; wrap.appendChild(conf);
+  const card=document.createElement("div");
+  card.style.cssText=`position:relative;width:320px;max-width:100%;background:linear-gradient(180deg,#16161f,#101017);border:1px solid ${t.accent}66;border-radius:22px;padding:26px 22px 22px;text-align:center;box-shadow:0 0 60px ${t.accent}22`;
+  card.innerHTML=`<div style="width:74px;height:74px;border-radius:50%;background:${t.accent};display:flex;align-items:center;justify-content:center;margin:0 auto 4px;box-shadow:0 0 30px ${t.accent}88;animation:pop .45s ease"><span style="font-size:40px;color:#0a0a0f;font-weight:800;line-height:1">✓</span></div>
+    <div style="font-size:26px;margin:6px 0 2px">${t.emoji}</div>
+    <div style="font-family:${F.disp};font-size:${t.big?38:34}px;letter-spacing:.04em;color:${C.text};line-height:1.02">${t.title}</div>
+    <div style="font-family:${F.mono};font-size:10px;color:${t.accent};letter-spacing:.1em;text-transform:uppercase;margin-top:7px">${t.sub}</div>
+    <div style="font-family:${F.mono};font-size:11px;color:${C.muted};margin-top:5px">${t.count}</div>
+    <button data-close="1" style="margin-top:18px;width:100%;padding:13px;border-radius:11px;border:none;background:${t.accent};color:#0a0a0f;font-family:${F.disp};font-size:17px;letter-spacing:.06em;cursor:pointer">KEEP GOING →</button>`;
+  wrap.appendChild(card);
+  wrap.addEventListener("click",ev=>{ if(ev.target===wrap||ev.target.getAttribute("data-close")){ wrap.style.animation="ovout .2s ease forwards"; setTimeout(()=>wrap.remove(),190); } });
+  document.body.appendChild(wrap);
+  fireConfetti(conf,t.confetti);
+}
+
+// ── Events ──
+document.addEventListener("click",ev=>{
+  if(ev.target && ev.target.matches && ev.target.matches("input,textarea")) return;
+  const t=ev.target.closest("[data-act]"); if(!t) return;
+  const a=t.getAttribute("data-act"),v=t.getAttribute("data-v"),dk=`w${S.week}d${S.day}`;
+  if(a==="tab"){S.view=v;render();}
+  else if(a==="fuel"){S.fuel=v;render();}
+  else if(a==="week"){S.week=+v;S.day=0;render();}
+  else if(a==="phase"){S.week=+Object.keys(PHASES[+v-1].weeks)[0];S.day=0;render();}
+  else if(a==="env"){const d=DATA[dk]||{};DATA[dk]={...d,env:v};persist();render();}
+  else if(a==="export"){showExport();}
+  else if(a==="import"){showImport();}
+  else if(a==="docopy"){
+    const box=document.getElementById("expbox"); if(!box) return; box.select();
+    const done=()=>{t.textContent="✓ COPIED";setTimeout(()=>{t.textContent="COPY";},1500);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(box.value).then(done).catch(()=>{try{document.execCommand("copy");done();}catch(_){}}); }
+    else { try{document.execCommand("copy");done();}catch(_){} }
+  }
+  else if(a==="dodownload"){
+    try{ const blob=new Blob([JSON.stringify(DATA)],{type:"application/json"});
+      const url=URL.createObjectURL(blob); const el=document.createElement("a");
+      el.href=url; el.download="deadly-sprint-backup-"+new Date().toISOString().slice(0,10)+".json";
+      document.body.appendChild(el); el.click(); el.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000);
+      t.textContent="✓ SAVED"; setTimeout(()=>{t.textContent="DOWNLOAD";},1500);
+    }catch(_){ t.textContent="USE COPY"; }
+  }
+  else if(a==="dorestore"){
+    const box=document.getElementById("impbox"),msg=document.getElementById("impmsg");
+    if(!box) return; let obj;
+    try{ obj=JSON.parse(box.value); }catch(_){ if(msg)msg.textContent="Couldn't read that — check you pasted the whole backup."; return; }
+    if(!obj||typeof obj!=="object"||Array.isArray(obj)){ if(msg)msg.textContent="That doesn't look like a valid backup."; return; }
+    Object.keys(obj).forEach(k=>{ DATA[k]=obj[k]; }); persist();
+    const m=document.getElementById("modal"); if(m) m.remove(); render();
+  }
+  else if(a==="day"){S.day=+v;render();}
+  else if(a==="jump"){S.week=+t.getAttribute("data-w");S.day=+t.getAttribute("data-d");S.view="train";render();}
+  else if(a==="ex"){ if(ev.target.closest("[data-noex]")) return; const id=t.getAttribute("data-id");const d=DATA[dk]||{};const done={...(d.done||{})};done[id]=!done[id];DATA[dk]={...d,done};persist();render(); }
+  else if(a==="round"){ const si=+t.getAttribute("data-si"),ri=+t.getAttribute("data-ri");const d=DATA[dk]||{};const fins={...(d.fins||{})};const arr=[...(fins[si]||[])];arr[ri]=!arr[ri];fins[si]=arr;DATA[dk]={...d,fins};persist();render(); }
+  else if(a==="complete"){ const d=DATA[dk]||{};const now=!d.completed;DATA[dk]={...d,completed:now,completedAt:now?new Date().toISOString():null};persist();
+    if(now){ const tier=tierFor(S.week,S.day); const nx=nextAfter(S.week,S.day); if(nx){S.week=nx.w;S.day=nx.i;} render(); celebrate(tier); }
+    else { render(); } }
+  else if(a==="bodysave"){
+    const root=document.getElementById("root");const g=k=>{const el=root.querySelector(`[data-bf="${k}"]`);return el?el.value:"";};
+    if(!g("weight")) return;
+    const saved=DATA.__body||JSON.parse(JSON.stringify(BODY_SEED));
+    const en={date:g("date"),weight:g("weight"),smm:g("smm"),pbf:g("pbf"),bmr:g("bmr"),vfa:g("vfa"),score:g("score")};
+    const entries=[...(saved.entries||[]),en].sort((x,y)=>x.date.localeCompare(y.date));
+    DATA.__body={...saved,entries};persist();render();
+  }
+});
+// inputs (no re-render, keep focus)
+document.addEventListener("input",ev=>{
+  const t=ev.target; if(!t.getAttribute) return;
+  if(t.getAttribute("data-field")==="note"){
+    const dk=t.getAttribute("data-dk");const d=DATA[dk]||{};DATA[dk]={...d,note:t.value};persist();
+  } else if(t.hasAttribute("data-w")){
+    const dk=t.getAttribute("data-dk"),id=t.getAttribute("data-w"),key=t.getAttribute("data-wkey"),si=+t.getAttribute("data-set"),val=t.value;
+    const d=DATA[dk]||{};const w={...(d.w||{})};
+    let arr=Array.isArray(w[id])?w[id].slice():(w[id]!=null?[w[id]]:[]);
+    arr[si]=val; w[id]=arr; DATA[dk]={...d,w};
+    DATA.weights=DATA.weights||{}; DATA.weights[key]=arr.slice();
+    persist();
+    t.style.borderColor = val ? C.purple : C.border;
+  }
+});
+
+{ const f=firstIncomplete(); if(f){ S.week=f.w; S.day=f.i; } }
+render();
+
+}catch(e){var d=document.getElementById("err");if(d){d.style.display="block";d.textContent="Error:\n"+(e&&e.stack?e.stack:e);}}
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
+</script>
+</body>
+</html>
