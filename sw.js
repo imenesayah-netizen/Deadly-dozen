@@ -1,5 +1,5 @@
 // Deadly Sprint service worker — app-shell offline cache
-const CACHE = "deadly-sprint-v1";
+const CACHE = "deadly-sprint-v2";
 const ASSETS = [
   "./",
   "./index.html",
