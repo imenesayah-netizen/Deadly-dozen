@@ -49,13 +49,13 @@ const PHASES = [
   { id:1, title:"BUILD", wks:"Weeks 1–2",
     desc:"Overload the labours above race weight, fast 200m reps, long circuits.",
     weeks:{
-      1:{h:"Week 1 — Overload",     run:"10×200m @ 48–52s · 60s jog", rest:"60s strength", rpe:"RPE 8"},
-      2:{h:"Week 2 — Peak Volume",  run:"12×200m @ 47–50s · 45s jog", rest:"45s strength", rpe:"RPE 8–9"},
+      1:{h:"Week 1 — Overload",     run:"10×200m @ 4:00–4:20/km · 60s jog", rest:"60s strength", rpe:"RPE 8"},
+      2:{h:"Week 2 — Peak Volume",  run:"12×200m @ 3:55–4:10/km · 45s jog", rest:"45s strength", rpe:"RPE 8–9"},
     }},
   { id:2, title:"SHARPEN", wks:"Week 3",
     desc:"Full 12-round race rehearsal, faster/shorter runs, volume trimmed.",
     weeks:{
-      3:{h:"Week 3 — Full Rehearsal", run:"8×200m @ 45–48s · full recovery", rest:"60s strength", rpe:"RPE 9 rehearsal"},
+      3:{h:"Week 3 — Full Rehearsal", run:"8×200m @ 3:45–4:00/km · full recovery", rest:"60s strength", rpe:"RPE 9 rehearsal"},
     }},
   { id:3, title:"RACE", wks:"Week 4",
     desc:"Taper: openers, primer, shakeout, race Saturday.",
@@ -99,7 +99,7 @@ function raceWeekDays(){
         ex("o2","⚡","Drills: A-skips · high knees · butt kicks","2×20m ea"),
         ex("o3","💨","Strides","3×60m","Build to race pace")]},
       {lbl:"Openers",exs:[
-        ex("o4","🎯","200m repeats","5×200m","Race pace ~52–55s · 2 min walk · crisp, not hard")]},
+        ex("o4","🎯","200m repeats","5×200m","4:20–4:35/km (≈52–55s per 200m) · 2 min walk · crisp, not hard")]},
       {lbl:"Cool-Down",exs:[ex("o5","🚶","Easy jog / walk","5 min")]}]},
     {num:"D2",tag:"hybrid",c:C.lime,dur:"20 min",int:50,calNote:"Normal eating · sleep is the priority",
      name:"Primer",title:"Primer — 2 Easy Rounds",secs:[
@@ -130,9 +130,9 @@ function raceWeekDays(){
         ex("r1","🏃","Easy jog","5 min"),
         ex("r2","⚡","Drills + 3 builds to race pace","5 min"),
         ex("r3","🔄","5 snatch + 3 devil press + 10m bear crawl","1×","Prime the movements")]},
-      {lbl:"The race — 12 rounds",fin:true,rounds:"12 rounds",cs:circuit(1,12,"52–56s")},
+      {lbl:"The race — 12 rounds",fin:true,rounds:"12 rounds",cs:circuit(1,12,"4:20–4:40/km")},
       {lbl:"Pacing plan — tick as you commit",exs:[
-        ex("r4","1️⃣","Runs controlled — don't sprint the 200s","—","~52–56s · save it for the labours"),
+        ex("r4","1️⃣","Runs controlled — don't sprint the 200s","—","4:20–4:40/km · save it for the labours"),
         ex("r5","✂️","Break 30-rep sets early","—","15/15 on snatch, push press, clean & press"),
         ex("r6","🧳","Carries unbroken","—","Farmers, front, overhead — never set down"),
         ex("r7","🐻","Bear crawl steady, not fast","—","Hips low · breathe · protect the heart rate"),
@@ -146,17 +146,17 @@ function raceWeekDays(){
 function getDays(w){
   if(w===4) return raceWeekDays();
   const P = {
-    1:{sets:4, bc2:"3×15m", bc4:"3×15m", iv:"10×200m", ivp:"48–52s", ivr:"60s jog", r4:"2×400m",
+    1:{sets:4, bc2:"3×15m", bc4:"3×15m", iv:"10×200m", ivp:"4:00–4:20/km (≈48–52s per 200m)", ivr:"60s jog", r4:"2×400m",
        d5:{n:"Tempo",s:"20 min",note:"5:10–5:15/km · comfortably hard"},
-       cr:[1,8], crp:"55–58s", crr:"45s between rounds", fr:"3 rounds",
+       cr:[1,8], crp:"4:35–4:50/km", crr:"45s between rounds", fr:"3 rounds",
        d6:{n:"Z2 run",s:"30 min",note:"Conversational · skip if recovery is low"}},
-    2:{sets:5, bc2:"3×20m", bc4:"3×20m", iv:"12×200m", ivp:"47–50s", ivr:"45s jog", r4:"3×400m",
-       d5:{n:"400m repeats",s:"6×400m",note:"1:50–1:55 each · 75s jog"},
-       cr:[5,12], crp:"52–56s", crr:"30s between rounds", fr:"4 rounds",
+    2:{sets:5, bc2:"3×20m", bc4:"3×20m", iv:"12×200m", ivp:"3:55–4:10/km (≈47–50s per 200m)", ivr:"45s jog", r4:"3×400m",
+       d5:{n:"400m repeats",s:"6×400m",note:"4:35–4:50/km (≈1:50–1:55 per 400m) · 75s jog"},
+       cr:[5,12], crp:"4:20–4:40/km", crr:"30s between rounds", fr:"4 rounds",
        d6:{n:"Z2 run + strides",s:"35 min",note:"Finish with 4×20s strides · skip if recovery is low"}},
-    3:{sets:3, bc2:"1×60m", bc4:"2×30m", iv:"8×200m", ivp:"45–48s", ivr:"90s walk", r4:"2×400m",
+    3:{sets:3, bc2:"1×60m", bc4:"2×30m", iv:"8×200m", ivp:"3:45–4:00/km (≈45–48s per 200m)", ivr:"90s walk", r4:"2×400m",
        d5:{n:"Tempo",s:"15 min",note:"5:05/km · then 4×100m strides"},
-       cr:[1,12], crp:"52–56s", crr:"no planned rest — race effort", fr:"2 rounds",
+       cr:[1,12], crp:"4:20–4:40/km", crr:"no planned rest — race effort", fr:"2 rounds",
        d6:{n:"Easy jog + mobility",s:"20 min",note:"Optional · or full rest"}},
   }[w];
   const s=P.sets;
@@ -173,7 +173,7 @@ function getDays(w){
         ex("d1c","💨","Strides","4×60m","Build to interval pace")]},
       {lbl:"Main Set",exs:[
         ex("d1m","🎯","200m repeats",P.iv,P.ivp+" · "+P.ivr+" · same split every rep"),
-        ex("d1n","🔥","400m race-effort reps",P.r4,"1:50–1:55 · 2 min walk · finish strong")]},
+        ex("d1n","🔥","400m race-effort reps",P.r4,"4:35–4:50/km (≈1:50–1:55 per 400m) · 2 min walk · finish strong")]},
       {lbl:"Cool-Down · 5 min",exs:[ex("d1d","🚶","Easy jog / walk","5 min")]}]},
 
     // D2 — STRENGTH-ENDURANCE A: legs / carries / grip (gym)
